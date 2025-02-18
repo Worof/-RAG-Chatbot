@@ -56,7 +56,7 @@ and receive a detailed answer.
 
 ![Comparison Query]![image](https://github.com/user-attachments/assets/9d76946c-1867-42a4-9e74-7a1f36fcb161) ![image](https://github.com/user-attachments/assets/6909b281-2531-4546-b1f5-7e71a69ea110)
 
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/dcf0a2b9-86e4-4103-b3e3-049f5150b515)
 
 
 You see the retrieved context plus a final answer describing whether House 1 or House 2 is closer to the best practice colors.
@@ -69,3 +69,52 @@ In a **Colab** environment, run:
 
 ```bash
 !pip install faiss-cpu sentence-transformers scikit-learn matplotlib seaborn transformers accelerate
+
+Or locally (e.g., in a virtual environment):
+
+```bash
+pip install faiss-cpu sentence-transformers scikit-learn matplotlib seaborn transformers accelerate
+
+## Usage
+Clone or download this repository.
+Open rag_agent_chatbot.py in your environment (Colab, local, etc.) that has the required libraries installed.
+Run rag_agent_chatbot.py:
+```bash
+python rag_agent_chatbot.py
+
+Flow:
+The script evaluates the agent on test_data by running classification metrics (accuracy, confusion matrix, etc.).
+Then it prompts you for queries.
+Type something like:
+
+```bash
+Compare house 1 and house 2 with the best practice color guide
+
+You’ll see the retrieved context and a final answer indicating which house is closer to best practice.
+
+## How It Works
+Initialization
+Loads the SentenceTransformer embedding model and the DeepSeek 1.3b LLM in half-precision.
+Documents
+Hardcoded: “best_practice,” “house1,” and “house2.”
+FAISS Index
+We embed each document and store vectors in an IndexFlatL2.
+Answer Generation
+If user query includes “compare house,” the code enumerates each room’s correctness for House 1 and House 2.
+Otherwise, we retrieve top docs and use the LLM to generate an answer from the combined context.
+Evaluation
+Minimal test data in test_data.
+We parse the agent’s final answers for “correct vs. incorrect” tokens, compute standard classification metrics, and visualize them.
+
+
+## Limitations
+Correctness Detection
+Very naive: counts certain words in the model’s output.
+Small Datasets
+Only a few documents and test queries. Real use requires more.
+LLM Size
+The 1.3B model still needs GPU resources.
+Domain-Specific
+Example is specific to color guides. Would need reworking for other tasks.
+
+
