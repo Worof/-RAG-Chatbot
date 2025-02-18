@@ -81,7 +81,7 @@ Open rag_agent_chatbot.py in your environment (Colab, local, etc.) that has the 
 Run rag_agent_chatbot.py:
 ```bash
 python rag_agent_chatbot.py
-
+```
 Flow:
 The script evaluates the agent on test_data by running classification metrics (accuracy, confusion matrix, etc.).
 Then it prompts you for queries.
@@ -89,7 +89,7 @@ Type something like:
 
 ```bash
 Compare house 1 and house 2 with the best practice color guide
-
+```
 You’ll see the retrieved context and a final answer indicating which house is closer to best practice.
 
 ## How It Works
