@@ -1,119 +1,135 @@
 
-# **RAG Agent ChatBot: House Color Guide Validator**
+# **RAG Chatbot with Continuous Learning**
 
-This project implements a **Retrieval-Augmented Generation (RAG) agent** for comparing house color schemes to a **best practice** guide and answering design-related questions. It uses:
+This project implements a **self-improving Retrieval-Augmented Generation (RAG) system** for design validation that learns from user feedback. Built with:
 
 - **FAISS** for vector similarity search  
+- **LoRA Adaptations** for efficient fine-tuning
+- **4-bit Quantization** for memory efficiency
 - **SentenceTransformers** (`all-MiniLM-L6-v2`) for embeddings  
-- **DeepSeek-7B** (`deepseek-ai/deepseek-llm-7b-chat`) as the language model  
-- **scikit-learn**, **matplotlib**, and **seaborn** for evaluation and visualization  
+- **DeepSeek-7B** (`deepseek-ai/deepseek-llm-7b-chat`) as the base LLM
+- **Peft** and **BitsAndBytes** for parameter-efficient training
 
 ---
 
-## **Features**
+## **Key Features**
 
-### **1. Embedding + Retrieval**
-- The system **embeds** a predefined **best practice color guide** and house descriptions using `SentenceTransformer`.
-- A **FAISS index** is built for fast similarity search.
+### **1. Continuous Online Learning**
+- Learns from user feedback via **LoRA adaptations**
+- Updates model weights every 3 corrections
+- Maintains performance metrics in real-time
 
-### **2. House Color Scheme Comparison**
-- If the query includes **“compare house”**, the system automatically:
-  - Compares **House 1** and **House 2** to the **best practice** guide.
-  - Highlights **matches and mismatches** for each room.
-  - Generates a **summary** of whether the house follows best practices.
+### **2. Enhanced Retrieval System**
+- Dynamic FAISS index with document versioning
+- Context-aware query expansion
+- Hybrid semantic search (dense + sparse)
 
-### **3. General AI-Powered Answers**
-- If the query is **not** a direct house comparison, the system:
-  - **Retrieves relevant documents** from FAISS.
-  - Uses **DeepSeek-7B** to generate a **context-aware response**.
+### **3. Safe Response Generation**
+- Structured prompts prevent hallucinations
+- Confidence scoring for generated answers
+- Fallback to "I don't know" for uncertain responses
 
-### **4. Interactive Chat Mode**
-- After evaluation, users can **enter their own design queries**.
-- The chatbot **retrieves relevant context** and provides **AI-generated insights**.
-
-### **5. Real-Time Performance Evaluation**
-- Users **provide feedback** on whether the AI’s answer was correct or incorrect.
-- The system **tracks accuracy, precision, recall, F1-score, and ROC-AUC**.
-- Results are **visualized** with:
-  - **Confusion Matrix**
-  - **Bar chart of performance metrics**
+### **4. Interactive Learning Interface**
+- Real-time performance dashboards
+- User correction tracking
+- Model version comparison
 
 ---
 
-## **Screenshots**
+## **Key Technologies**
 
-### **Evaluation Results and Confusion Matrix**
-_(Example of model evaluation metrics based on user feedback)_
-
-![image](https://github.com/user-attachments/assets/8ec28c67-6150-4c48-b3a9-c7df2b018351)
-
-![image](https://github.com/user-attachments/assets/77343959-7086-4a24-9440-2222a062aafe)
-
-![image](https://github.com/user-attachments/assets/6aa89f15-e802-40a9-96aa-b6c92faaf63a)
+| Component              | Technology Stack              |
+|------------------------|-------------------------------|
+| LLM Framework          | Transformers + Peft           |
+| Adapter Training        | LoRA (Rank-8)                 |
+| Vector Store            | FAISS (FlatL2 Index)          |
+| Evaluation              | scikit-learn + matplotlib     |
 
 ---
-
-
 
 ## **Installation**
 
-### **Colab / Cloud Setup**
-Run the following to install dependencies:
-```bash
-!pip install faiss-cpu sentence-transformers scikit-learn matplotlib seaborn transformers accelerate
-```
+### **Requirements**
+- Python 3.10+
+- NVIDIA GPU with ≥16GB VRAM
+- CUDA 11.8+
 
-### **Local Setup**
-For local installation, use:
 ```bash
-pip install faiss-cpu sentence-transformers scikit-learn matplotlib seaborn transformers accelerate
+# Install core dependencies
+pip install -U peft transformers faiss-cpu sentence-transformers \
+bitsandbytes accelerate matplotlib seaborn scikit-learn
 ```
 
 ---
 
 ## **Usage**
-1. **Clone or download this repository**.
-2. **Run the chatbot script**:
-   ```bash
-   python rag_agent_chatbot.py
-   ```
-3. **Interact with the AI**:
-   - The system first evaluates performance metrics.
-   - You can then type design-related queries and receive AI-generated insights.
+
+1. **Launch the chatbot**:
+```bash
+python rag_chatbot.py
+```
+
+2. **Interaction workflow**:
+```
+1. Ask design questions
+2. Rate answers (Y/N)
+3. Provide corrections when needed
+4. System auto-updates every 3 feedbacks
+```
+
+3. **Monitor performance**:
+- Real-time accuracy/F1 updates
+- Confusion matrix visualization
+- Training loss curves
 
 ---
 
-## **How It Works**
+## **System Architecture**
 
-### **1. Model Initialization**
-- Loads **DeepSeek-7B** for design-related text generation.
-- Uses **SentenceTransformers** for document embeddings.
+```mermaid
+graph TD
+    A[User Query] --> B{Query Type?}
+    B -->|Comparison| C[House Analysis]
+    B -->|General| D[FAISS Retrieval]
+    C --> E[Rule-based Comparison]
+    D --> F[LLM Generation]
+    E --> G[Feedback Collection]
+    F --> G
+    G --> H{Feedback Buffer Full?}
+    H -->|Yes| I[LoRA Fine-tuning]
+    H -->|No| J[Continue Chat]
+    I --> K[Update Adapters]
+    K --> J
+```
 
-### **2. House Color Guide & FAISS Index**
-- Hardcoded documents include:
-  - **Best practice color guide**
-  - **Descriptions of House 1 and House 2**
-- Documents are **vectorized** and stored in **FAISS** for efficient retrieval.
+---
 
-### **3. Answer Generation**
-- If the query includes **“compare house”**, the system:
-  - Compares **each room** for correctness.
-  - Lists mismatches and provides a final assessment.
-- Otherwise, it **retrieves** relevant documents and **uses the LLM** to generate a **context-based response**.
+## **Key Improvements**
 
-### **4. Performance Evaluation**
-- The chatbot **tracks accuracy** based on user feedback.
-- It **visualizes performance** via:
-  - **Classification reports**
-  - **Confusion matrices**
-  - **Bar charts of evaluation metrics**
+1. **Continuous Learning**
+   - Learns from user corrections
+   - Maintains versioned adapter weights
+   - Progressive performance improvements
+
+2. **Memory Efficiency**
+   - 75% smaller memory footprint
+   - Gradient checkpointing
+   - Optimized batch processing
+
+3. **Safety Features**
+   - Input validation
+   - Training failure fallbacks
+   - Hallucination detection
 
 ---
 
 ## **Limitations**
-- **Correctness detection** is based on word matching and user feedback.
-- **LLM requires GPU resources** for optimal performance.
-- **Limited to house color validation and related design queries**.
+
+- **Experimental Feature**: Online learning may occasionally degrade performance
+- **VRAM Requirements**: Needs ≥16GB GPU memory
+- **Feedback Quality**: Dependent on user-provided corrections
+- **Document Scope**: Currently limited to color guidelines
 
 ---
+
 
